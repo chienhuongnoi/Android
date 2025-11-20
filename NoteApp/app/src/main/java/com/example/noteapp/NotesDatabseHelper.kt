@@ -14,7 +14,6 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         private const val COLUMN_TITLE = "title"
         private const val COLUMN_CONTENT = "content"
     }
-
     override fun onCreate(db: SQLiteDatabase?) {
         val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY, $COLUMN_TITLE TEXT, $COLUMN_CONTENT TEXT)"
         db?.execSQL(createTableQuery)
@@ -40,7 +39,7 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         db.close()
     }
 
-    fun getAllNotes() : List<Note>{
+    fun getAllNotes() : MutableList<Note>{
         val noteList = mutableListOf<Note>()
         val db = readableDatabase
         val query = "SELECT * FROM $TABLE_NAME"
