@@ -28,7 +28,7 @@
         android:text=""
         android:visibility="gone"
         android:layout_centerHorizontal="true"
-        android:layout_marginStart="18dp"
+        android:layout_marginStart="24dp"
         android:textColor="@color/orange"/>
     <ImageView
         android:id="@+id/closeMultiSelectButton"
