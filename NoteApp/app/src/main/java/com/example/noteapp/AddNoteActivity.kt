@@ -14,7 +14,6 @@ class AddNoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
         db = NotesDatabseHelper(this)

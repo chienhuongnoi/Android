@@ -40,7 +40,7 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         db.close()
     }
 
-    fun getAllotes() : List<Note>{
+    fun getAllNotes() : List<Note>{
         val noteList = mutableListOf<Note>()
         val db = readableDatabase
         val query = "SELECT * FROM $TABLE_NAME"
