@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         db = NotesDatabseHelper(this)
-        notesAdapter = NotesAdapter(db.getAllotes(), this)
+        notesAdapter = NotesAdapter(db.getAllNotes(), this)
 
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.notesRecyclerView.adapter = notesAdapter
@@ -33,6 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        notesAdapter.refreshData(db.getAllotes())
+        notesAdapter.refreshData(db.getAllNotes())
     }
 }
