@@ -2,12 +2,15 @@ package com.example.noteapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.noteapp.databinding.ActivityMainBinding
 
@@ -16,12 +19,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: NotesDatabseHelper
     private lateinit var notesAdapter: NotesAdapter
 
+    lateinit var allNotes: List<Note>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         db = NotesDatabseHelper(this)
         notesAdapter = NotesAdapter(db.getAllNotes(), this)
+        allNotes = db.getAllNotes()
 
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.notesRecyclerView.adapter = notesAdapter
@@ -62,8 +69,11 @@ class MainActivity : AppCompatActivity() {
                         val noteId = notesAdapter.notes[index].id
                         db.deleteNote(noteId)
                     }
-
+                    //Cập nhật lại dữ liều tìm kiếm
+                    allNotes = db.getAllNotes()
+                    //Cập nhật lại adapter
                     notesAdapter.refreshData(db.getAllNotes())
+                    //Xoá chọn
                     notesAdapter.clearSelection()
                 }
                 .setNegativeButton("Huỷ") { dialog, _ ->
@@ -71,10 +81,25 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
+        binding.searchEditText.addTextChangedListener {text ->
+            filterNotes(text.toString())
+        }
     }
 
     override fun onResume() {
         super.onResume()
+        allNotes = db.getAllNotes()
         notesAdapter.refreshData(db.getAllNotes())
+    }
+    private fun filterNotes(query: String) {
+        val filteredNotes = if (query.isEmpty()) {
+            allNotes
+        } else {
+            allNotes.filter {
+                it.title.contains(query, ignoreCase = true) ||
+                        it.content.contains(query, ignoreCase = true)
+            }
+        }
+        notesAdapter.refreshData(filteredNotes as MutableList<Note>, query)
     }
 }

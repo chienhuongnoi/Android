@@ -2,6 +2,10 @@ package com.example.noteapp
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +21,7 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
     var selectedItems = mutableListOf<Int>()
     var isMultiSelectMode = false
     var onSelectionChanged: ((Int) -> Unit)? = null
+    var searchQuery: String = ""
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         init {
             itemView.setOnLongClickListener {
@@ -78,6 +83,10 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
 //            refreshData(db.getAllNotes())
 //            Toast.makeText(holder.itemView.context, "Note deleted", Toast.LENGTH_SHORT).show()
 //        }
+        //Highlight màu chữ khi tìm kiếm
+        holder.titleTextView.text = highlight(note.title, searchQuery)
+        holder.contentTextView.text = highlight(note.content, searchQuery)
+        //Hiển thị chế độ chọn
         if(isMultiSelectMode){
             holder.selectIcon.visibility = View.VISIBLE
             if(selectedItems.contains(position)){
@@ -103,8 +112,9 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
             )
         }
     }
-    fun refreshData(newNotes: MutableList<Note>){
+    fun refreshData(newNotes: MutableList<Note>, query: String = ""){
         notes = newNotes
+        searchQuery = query
         notifyDataSetChanged()
     }
     private fun toggleSelection(position: Int) {
@@ -129,5 +139,26 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         isMultiSelectMode = false
         notifyDataSetChanged()
         onSelectionChanged?.invoke(0)
+    }
+    private fun highlight(text: String, query: String): SpannableString {
+        val spannable = SpannableString(text)
+        if (query.isEmpty()) return spannable
+
+        val lowerText = text.lowercase()
+        val lowerQuery = query.lowercase()
+
+        var start = lowerText.indexOf(lowerQuery)
+        while (start >= 0) {
+            val end = start + query.length
+            spannable.setSpan(
+                ForegroundColorSpan(Color.parseColor("#FFC94D")), //
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            start = lowerText.indexOf(lowerQuery, end)
+        }
+
+        return spannable
     }
 }
