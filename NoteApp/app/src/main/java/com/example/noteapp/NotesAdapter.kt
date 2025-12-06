@@ -97,6 +97,7 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         //Hiển thị chế độ chọn
         if(isMultiSelectMode){
             holder.selectIcon.visibility = View.VISIBLE
+            holder.btnPin.visibility = View.GONE
             if(selectedItems.contains(position)){
                 //Khi được chọn
                 holder.selectIcon.setImageResource(R.drawable.outline_check_circle_24)
@@ -115,6 +116,7 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         else{
             //Khi thoát chế độ chọn
             holder.selectIcon.visibility = View.GONE
+            holder.btnPin.visibility = View.VISIBLE
             holder.cardView.setCardBackgroundColor(
                 ContextCompat.getColor(holder.itemView.context, R.color.white)
             )

@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             else{
                 binding.closeMultiSelectButton.visibility = View.GONE
                 binding.addButton.visibility = View.VISIBLE
-                binding.notesHeading.text = "Notes."
+                binding.notesHeading.text = "Ghi chú."
                 binding.deleteSelectedItemButton.visibility = View.GONE
             }
         }
@@ -130,7 +130,11 @@ class MainActivity : AppCompatActivity() {
                         it.content.contains(query, ignoreCase = true)
             }
         }
-        notesAdapter.refreshData(filteredNotes as MutableList<Note>, query)
+        val sortedNotes = filteredNotes.sortedWith(
+            compareByDescending<Note> { it.isPinned }
+                .thenByDescending { it.createdAt }
+        )
+        notesAdapter.refreshData(sortedNotes.toMutableList(), query)
     }
     //Haàm load lại danh mục
     private fun loadCategories() {
