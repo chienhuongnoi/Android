@@ -2,14 +2,9 @@ package com.example.noteapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.noteapp.databinding.ActivityMainBinding
@@ -18,9 +13,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var db: NotesDatabseHelper
     private lateinit var notesAdapter: NotesAdapter
+    lateinit var catAdapter: CategoryHorizontalAdapter
 
     lateinit var allNotes: List<Note>
 
+    private var currentCategoryId : Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +27,17 @@ class MainActivity : AppCompatActivity() {
         notesAdapter = NotesAdapter(db.getAllNotes(), this)
         allNotes = db.getAllNotes()
 
+        //Recycler view
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.notesRecyclerView.adapter = notesAdapter
 
-
+        //Nút thêm
         binding.addButton.setOnClickListener {
             val intent = Intent(this, AddNoteActivity::class.java)
+            intent.putExtra("selectedCategoryId", currentCategoryId)
             startActivity(intent)
         }
+        //Chế độ đa chọn
         notesAdapter.onSelectionChanged = {count ->
             if (count > 0){
                 binding.closeMultiSelectButton.visibility = View.VISIBLE
@@ -55,9 +55,11 @@ class MainActivity : AppCompatActivity() {
                 binding.deleteSelectedItemButton.visibility = View.GONE
             }
         }
+        //Nút đóng chế độ đa chọn
         binding.closeMultiSelectButton.setOnClickListener {
             notesAdapter.clearSelection()
         }
+        //Xóa nhiều mục
         binding.deleteSelectedItemButton.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("Xác nhận xoá")
@@ -81,16 +83,47 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
+        //tìm kiếm
         binding.searchEditText.addTextChangedListener {text ->
             filterNotes(text.toString())
         }
+        //Điều hướng sang màn hình danh mục
+        binding.categoryButton.setOnClickListener {
+            val intent = Intent(this, CategoriesActivity::class.java)
+            startActivityForResult(intent, 1)
+        }
+        // Lấy danh mục + thêm ALL ở đầu
+        val categories = mutableListOf<Category>()
+        categories.add(Category(-1, "Tất cả"))
+        categories.addAll(db.getAllCategories())
+
+        //Recycler view danh mục
+        catAdapter = CategoryHorizontalAdapter(categories) { cat ->
+            currentCategoryId = cat.id
+            if (cat.id == -1) {   // Lấy all notes
+                notesAdapter.refreshData(db.getAllNotes())
+                //cập nhật allnote để lọc
+                allNotes = db.getAllNotes()
+            } else {
+                notesAdapter.refreshData(db.getNotesByCategory(cat.id))
+                //cập nật allnote để lọc
+                allNotes = db.getNotesByCategory(cat.id)
+            }
+        }
+
+        //Hiển thị danh mục ở mainactivity
+        binding.rvCategoriesHorizontal.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvCategoriesHorizontal.adapter = catAdapter
     }
 
     override fun onResume() {
         super.onResume()
-        allNotes = db.getAllNotes()
-        notesAdapter.refreshData(db.getAllNotes())
+        allNotes = db.getNotesByCategory(currentCategoryId)
+        notesAdapter.refreshData(db.getNotesByCategory(currentCategoryId))
+        loadCategories()
     }
+    //Hàm lọc note theo tiêu đề hoặc nội dung
     private fun filterNotes(query: String) {
         val filteredNotes = if (query.isEmpty()) {
             allNotes
@@ -101,5 +134,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         notesAdapter.refreshData(filteredNotes as MutableList<Note>, query)
+    }
+    //Haàm load lại danh mục
+    private fun loadCategories() {
+        val categories = db.getAllCategories().toMutableList()
+
+        categories.add(0, Category(-1, "Tất cả"))
+        catAdapter.updateData(categories)
     }
 }

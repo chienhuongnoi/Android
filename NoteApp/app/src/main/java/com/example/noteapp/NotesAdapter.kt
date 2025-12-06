@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
-    private val db: NotesDatabseHelper = NotesDatabseHelper(context)
     var selectedItems = mutableListOf<Int>()
     var isMultiSelectMode = false
     var onSelectionChanged: ((Int) -> Unit)? = null
@@ -36,8 +35,6 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
         val contentTextView: TextView = itemView.findViewById(R.id.contentTextView)
         val cardView: CardView = itemView.findViewById(R.id.cardView)
-//        val updateButton: ImageView = itemView.findViewById(R.id.updateButton)
-//        val deleteButton: ImageView = itemView.findViewById(R.id.deleteButton)
         val selectIcon: ImageView = itemView.findViewById(R.id.selectIcon)
 
     }
@@ -62,12 +59,6 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         holder.titleTextView.text = note.title
         holder.contentTextView.text = note.content
 
-//        holder.updateButton.setOnClickListener {
-//            val intent = Intent(holder.itemView.context, UpdateNoteActivity::class.java).apply {
-//                putExtra("note_id", note.id)
-//            }
-//            holder.itemView.context.startActivity(intent)
-//        }
         holder.itemView.setOnClickListener {
             if (isMultiSelectMode) {
                 toggleSelection(position)
@@ -78,11 +69,6 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
                 holder.itemView.context.startActivity(intent)
             }
         }
-//        holder.deleteButton.setOnClickListener {
-//            db.deleteNote(note.id)
-//            refreshData(db.getAllNotes())
-//            Toast.makeText(holder.itemView.context, "Note deleted", Toast.LENGTH_SHORT).show()
-//        }
         //Highlight màu chữ khi tìm kiếm
         holder.titleTextView.text = highlight(note.title, searchQuery)
         holder.contentTextView.text = highlight(note.content, searchQuery)
@@ -112,11 +98,13 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
             )
         }
     }
+    //Hàm cập nhật lại dữ liệu
     fun refreshData(newNotes: MutableList<Note>, query: String = ""){
         notes = newNotes
         searchQuery = query
         notifyDataSetChanged()
     }
+    //Hàm ử lý chọn nhiều mục
     private fun toggleSelection(position: Int) {
         if (selectedItems.contains(position)) {
             selectedItems.remove(position)
@@ -134,12 +122,14 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
             onSelectionChanged?.invoke(0)
         }
     }
+    //Hàm xoá chọn nhiều mục
     fun clearSelection(){
         selectedItems.clear()
         isMultiSelectMode = false
         notifyDataSetChanged()
         onSelectionChanged?.invoke(0)
     }
+    //Hàm nổi bật màu chữ khi tìm kiếm
     private fun highlight(text: String, query: String): SpannableString {
         val spannable = SpannableString(text)
         if (query.isEmpty()) return spannable
