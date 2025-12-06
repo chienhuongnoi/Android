@@ -31,6 +31,7 @@ class UpdateNoteActivity : AppCompatActivity() {
         binding.updateSaveButton.setOnClickListener {
             val newTitle = binding.updateTitleEditText.text.toString()
             val newContent = binding.updateContentEditText.text.toString()
+
             val updatedNote = Note(noteId, newTitle, newContent)
             db.updateNote(updatedNote)
             finish()

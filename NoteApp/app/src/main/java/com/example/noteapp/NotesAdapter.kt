@@ -3,6 +3,7 @@ package com.example.noteapp
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -11,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Date
+import java.util.Locale
 
 class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
+    private val db: NotesDatabseHelper = NotesDatabseHelper(context)
     var selectedItems = mutableListOf<Int>()
     var isMultiSelectMode = false
     var onSelectionChanged: ((Int) -> Unit)? = null
@@ -36,7 +39,8 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         val contentTextView: TextView = itemView.findViewById(R.id.contentTextView)
         val cardView: CardView = itemView.findViewById(R.id.cardView)
         val selectIcon: ImageView = itemView.findViewById(R.id.selectIcon)
-
+        val btnPin: ImageView = itemView.findViewById(R.id.btnPin)
+        val dateTextView: TextView = itemView.findViewById(R.id.dateTextView)
     }
 
     override fun getItemCount(): Int {
@@ -69,6 +73,24 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
                 holder.itemView.context.startActivity(intent)
             }
         }
+        holder.dateTextView.text = formatDate(note.createdAt)
+
+        //Ấn nút ghim
+        holder.btnPin.setOnClickListener {
+            val newPinnedValue = if (note.isPinned == 0) 1 else 0
+            db.togglePin(note.id, newPinnedValue)
+            note.isPinned = newPinnedValue
+            notes.sortWith(
+                compareByDescending<Note> { it.isPinned }
+                    .thenByDescending { it.createdAt }
+            )
+            notifyDataSetChanged()
+        }
+        holder.btnPin.setImageResource(
+            if (note.isPinned == 1) R.drawable.ic_pin_filled
+            else R.drawable.ic_pin
+        )
+
         //Highlight màu chữ khi tìm kiếm
         holder.titleTextView.text = highlight(note.title, searchQuery)
         holder.contentTextView.text = highlight(note.content, searchQuery)
@@ -150,5 +172,10 @@ class NotesAdapter(var notes: MutableList<Note>, context: Context) : RecyclerVie
         }
 
         return spannable
+    }
+    fun formatDate(time: String): String {
+        val t = time.toLong()
+        val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        return sdf.format(Date(t))
     }
 }
