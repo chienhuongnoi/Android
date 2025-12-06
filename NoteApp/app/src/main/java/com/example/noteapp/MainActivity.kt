@@ -43,14 +43,11 @@ class MainActivity : AppCompatActivity() {
                 binding.closeMultiSelectButton.visibility = View.VISIBLE
                 binding.addButton.visibility = View.GONE
                 binding.deleteSelectedItemButton.visibility = View.VISIBLE
-//                binding.selectedCountTextView.text = "$count selected"
-//                binding.selectedCountTextView.visibility = View.VISIBLE
                 binding.notesHeading.text = "Đã chọn $count mục"
             }
             else{
                 binding.closeMultiSelectButton.visibility = View.GONE
                 binding.addButton.visibility = View.VISIBLE
-//                binding.selectedCountTextView.visibility = View.GONE
                 binding.notesHeading.text = "Notes."
                 binding.deleteSelectedItemButton.visibility = View.GONE
             }
