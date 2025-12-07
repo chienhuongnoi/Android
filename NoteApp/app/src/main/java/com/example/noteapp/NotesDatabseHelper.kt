@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object{
         private const val DATABASE_NAME = "notesapp.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
         //Bảng note
         private const val TABLE_NOTES = "allnotes"
         private const val COLUMN_NOTE_ID = "id"
@@ -22,6 +22,12 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         private const val TABLE_CATEGORY = "categories"
         private const val COLUMN_CAT_ID = "id"
         private const val COLUMN_CAT_NAME = "name"
+        // TABLE TASKS
+        private const val TABLE_TASKS = "tasks"
+        private const val COLUMN_TASK_ID = "id"
+        private const val COLUMN_TASK_NAME = "taskName"
+        private const val COLUMN_TASK_DEADLINE = "deadline"
+        private const val COLUMN_TASK_IS_DONE = "isDone"
     }
     override fun onCreate(db: SQLiteDatabase?) {
         val createCategoryTable = """
@@ -43,8 +49,18 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
             )
         """.trimIndent()
 
+        val createTaskTable = """
+        CREATE TABLE $TABLE_TASKS (
+            $COLUMN_TASK_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_TASK_NAME TEXT,
+            $COLUMN_TASK_IS_DONE INTEGER DEFAULT 0,
+            $COLUMN_TASK_DEADLINE TEXT
+        )
+    """.trimIndent()
+
         db?.execSQL(createCategoryTable)
         db?.execSQL(createNotesTable)
+        db?.execSQL(createTaskTable)
     }
 
     override fun onUpgrade(
@@ -62,6 +78,18 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         }
         if (oldVersion < 3){
             db?.execSQL("ALTER TABLE $TABLE_NOTES ADD COLUMN $COLUMN_IS_PINNED INTEGER DEFAULT 0")
+        }
+        if (oldVersion < 4) {
+            val createTaskTable = """
+        CREATE TABLE IF NOT EXISTS $TABLE_TASKS (
+            $COLUMN_TASK_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            $COLUMN_TASK_NAME TEXT,
+            $COLUMN_TASK_IS_DONE INTEGER DEFAULT 0,
+            $COLUMN_TASK_DEADLINE TEXT
+        )
+    """.trimIndent()
+
+            db?.execSQL(createTaskTable)
         }
     }
 
@@ -203,4 +231,63 @@ class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_
         db.update(TABLE_NOTES, values, "$COLUMN_NOTE_ID = ?", arrayOf(noteId.toString()))
         db.close()
     }
+    //Hàm lấy toàn bộ task
+    fun getAllTasks(): MutableList<Task> {
+        val list = mutableListOf<Task>()
+        val db = readableDatabase
+
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_TASKS ORDER BY id DESC", null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val task = Task(
+                    id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TASK_ID)),
+                    name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TASK_NAME)),
+                    deadline = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TASK_DEADLINE)),
+                    isDone = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_TASK_IS_DONE)),
+                )
+                list.add(task)
+            } while (cursor.moveToNext())
+        }
+
+        cursor.close()
+        return list
+    }
+    //Hàm thêm task
+    fun addTask(task: Task): Long {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_TASK_NAME, task.name)
+            put(COLUMN_TASK_DEADLINE, task.deadline)
+            put(COLUMN_TASK_IS_DONE, task.isDone)
+        }
+        return db.insert(TABLE_TASKS, null, values)
+    }
+    //Hàm cập nhật task
+    fun updateTask(task: Task): Int {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_TASK_NAME, task.name)
+            put(COLUMN_TASK_DEADLINE, task.deadline)
+            put(COLUMN_TASK_IS_DONE, task.isDone)
+        }
+
+        return db.update(
+            TABLE_TASKS,
+            values,
+            "$COLUMN_TASK_ID = ?",
+            arrayOf(task.id.toString())
+        )
+    }
+    //Hàm xoá task
+    fun deleteTask(taskId: Int): Int {
+        val db = writableDatabase
+        return db.delete(
+            TABLE_TASKS,
+            "$COLUMN_TASK_ID = ?",
+            arrayOf(taskId.toString())
+        )
+    }
+
+
 }
