@@ -4,4 +4,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="orange">#ed5f1e</color>
     <color name="selected_item_bg">#FFF7F7F7</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#666666</color>
+    <color name="border_color">#E0E0E0</color>
 </resources>
