@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.model
 
 data class Task(
     val id: Int = 0,

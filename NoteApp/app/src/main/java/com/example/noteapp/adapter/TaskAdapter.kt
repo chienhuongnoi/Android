@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.adapter
 
 import android.app.AlertDialog
 import android.content.Context
@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.noteapp.R
+import com.example.noteapp.database.NotesDatabseHelper
+import com.example.noteapp.model.Task
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -139,8 +142,8 @@ class TaskAdapter(
     }
     private fun formatDeadline(deadline: String): String {
         return try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            val inputFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
             val date = inputFormat.parse(deadline)
             outputFormat.format(date!!)
         } catch (e: Exception) {
@@ -149,7 +152,7 @@ class TaskAdapter(
     }
     private fun convertDeadlineToMillis(deadline: String): Long {
         return try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
             sdf.parse(deadline)?.time ?: Long.MAX_VALUE
         } catch (e: Exception) {
             Long.MAX_VALUE
@@ -162,7 +165,8 @@ class TaskAdapter(
             "yyyy-MM-dd HH:mm",
             "dd/MM/yyyy HH:mm",
             "MM/dd/yyyy HH:mm",
-            "yyyy/MM/dd HH:mm"
+            "yyyy/MM/dd HH:mm",
+            "dd-MM-yyyy HH:mm"
         )
 
         for (pattern in formats) {

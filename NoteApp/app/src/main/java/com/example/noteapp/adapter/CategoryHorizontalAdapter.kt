@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.noteapp.R
+import com.example.noteapp.model.Category
 
 class CategoryHorizontalAdapter(
     private var list: MutableList<Category>,

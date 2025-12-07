@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.adapter
 
 import android.content.Context
 import android.content.Intent
@@ -15,6 +15,10 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.noteapp.R
+import com.example.noteapp.database.NotesDatabseHelper
+import com.example.noteapp.model.Note
+import com.example.noteapp.ui.notes.UpdateNoteActivity
 import java.util.Date
 import java.util.Locale
 
