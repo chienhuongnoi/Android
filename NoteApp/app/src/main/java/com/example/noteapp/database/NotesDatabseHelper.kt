@@ -1,9 +1,12 @@
-package com.example.noteapp
+package com.example.noteapp.database
 
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.noteapp.model.Category
+import com.example.noteapp.model.Note
+import com.example.noteapp.model.Task
 
 class NotesDatabseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object{

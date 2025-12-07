@@ -1,9 +1,11 @@
-package com.example.noteapp
+package com.example.noteapp.ui.notes
 
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.noteapp.database.NotesDatabseHelper
 import com.example.noteapp.databinding.ActivityUpdateNoteBinding
+import com.example.noteapp.model.Note
 
 class UpdateNoteActivity : AppCompatActivity() {
 

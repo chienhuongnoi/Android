@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.ui.categories
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.noteapp.adapter.CategoryAdapter
+import com.example.noteapp.database.NotesDatabseHelper
 import com.example.noteapp.databinding.ActivityCategoriesBinding
+import com.example.noteapp.model.Category
 
 class CategoriesActivity : AppCompatActivity() {
     private lateinit var adapter: CategoryAdapter

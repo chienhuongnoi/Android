@@ -1,4 +1,4 @@
-package com.example.noteapp
+package com.example.noteapp.ui.notes
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -9,7 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.noteapp.ui.categories.CategoriesActivity
+import com.example.noteapp.adapter.CategoryHorizontalAdapter
+import com.example.noteapp.adapter.NotesAdapter
+import com.example.noteapp.database.NotesDatabseHelper
 import com.example.noteapp.databinding.FragmentNotesBinding
+import com.example.noteapp.model.Category
+import com.example.noteapp.model.Note
 
 class NotesFragment : Fragment() {
 
